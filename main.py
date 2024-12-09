@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, request
+from flask import Flask, render_template, redirect, url_for
 from flask_bootstrap import Bootstrap5
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
@@ -16,7 +16,11 @@ load_dotenv()
 ID = environ["ID"]
 SECRET = environ["SECRET"]
 TOKEN = environ["TOKEN"]
-print(ID, SECRET)
+
+HEADER = {
+    'Client-ID': ID,
+    'Authorization': f'Bearer {TOKEN}'
+}
 
 class Base(DeclarativeBase):
     pass
@@ -63,20 +67,12 @@ def call_game_api(name):
     # If there is no authentication token yet, write this on the console:
     # response = requests.post(url='https://id.twitch.tv/oauth2/token', data={'client_id': '77xg375rmm8qhbnrnrp9rpcgfkhbfg', 'client_secret': 'ty82mz7rd4eb8ygh3hzlczvkvs8ds4', 'grant_type': 'client_credentials'})
 
-    HEADER = {
-        'Client-ID': ID,
-        'Authorization': f'Bearer {TOKEN}'
-    }
     BODY = f'fields id, name, created_at; search "{name}"; limit: 100;'
 
     response = requests.post(url='https://api.igdb.com/v4/games', headers=HEADER, data=BODY)
     return response.json()
 
 def find_game_details(_id):
-    HEADER = {
-        'Client-ID': ID,
-        'Authorization': f'Bearer {TOKEN}'
-    }
     BODY_DETAILS = f'fields name, created_at, rating, cover, summary; where id = {_id};'
     COVER_DETAILS = f'fields url; where game = {_id};'
 
@@ -154,56 +150,6 @@ def select(_id):
     return redirect(url_for('edit', _id=db_instance.id))
 
 
-# USE THIS API
-# https://www.igdb.com/api
-
-
 if __name__ == '__main__':
     app.run(debug=True)
     db.session.close()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# CREATE TABLE
-# new_videogame_1 = TopVideogames(
-#     title="Mario and Luigi: Superstar Saga",
-#     year=2003,
-#     genre= "RPG",
-#     description="Travel to the Beanbean Kingdom with Mario and Luigi to recover Princess Peach's stolen voice in this humorous RPG",
-#     rating=9.0,
-#     ranking=9,
-#     review="A very funny game!",
-#     img_url="https://assets-prd.ignimgs.com/2022/01/31/mario-and-luigi-superstar-saga-button-crop-1643611937386.jpg"
-# )
-
-# new_videogame_2 = TopVideogames(
-#     title="Pokemon Soul Silver",
-#     year=2010,
-#     genre= "RPG",
-#     description="Explore the Johto and Kanto regions, capturing and training Pokémon to become the ultimate Pokémon Trainer",
-#     rating=8.7,
-#     ranking=10,
-#     review="The perfect pokemon game!",
-#     img_url="https://assets1.ignimgs.com/2019/05/17/pokemon-soulsilver---button-1558057647951.jpg"
-# )
-
-# with app.app_context():
-#     db.create_all()
-#     db.session.add(new_videogame_1)
-#     db.session.add(new_videogame_2)
-#     db.session.commit()
-#     db.session.close()
