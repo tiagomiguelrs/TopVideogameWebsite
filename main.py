@@ -65,7 +65,7 @@ class AddForm(FlaskForm):
 # DEFINE USEFUL FUNCTIONS
 def call_game_api(name):
     # If there is no authentication token yet, write this on the console:
-    # response = requests.post(url='https://id.twitch.tv/oauth2/token', data={'client_id': '77xg375rmm8qhbnrnrp9rpcgfkhbfg', 'client_secret': 'ty82mz7rd4eb8ygh3hzlczvkvs8ds4', 'grant_type': 'client_credentials'})
+    # response = requests.post(url='https://id.twitch.tv/oauth2/token', data={'client_id': 'my_id_str', 'client_secret': 'my_secret_str', 'grant_type': 'client_credentials'})
 
     BODY = f'fields id, name, created_at; search "{name}"; limit: 100;'
 
